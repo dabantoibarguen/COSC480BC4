@@ -13,6 +13,36 @@ void printBN(char *msg, BIGNUM * a)
    OPENSSL_free(number_str);
 }
 
+void privKey(BIGNUM *pkey){
+
+  BN_CTX *ctx = BN_CTX_new();
+
+  BIGNUM *p = BN_new();
+  BIGNUM *q = BN_new();
+  BIGNUM *e = BN_new();
+  BIGNUM *phin = BN_new();
+  BIGNUM *one = BN_new();
+  BIGNUM *po = BN_new();
+  BIGNUM *qo = BN_new();
+
+  BN_hex2bn(&one, "1");
+  BN_hex2bn(&p, "F7E75FDC469067FFDC4E847C51F452DF");
+  BN_hex2bn(&q, "E85CED54AF57E53E092113E62F436F4F");
+  BN_hex2bn(&e, "0D88C3");
+
+  BIGNUM *n = BN_new();
+
+  BN_mul(n, p, q, ctx);
+
+  BN_sub(po, p, one);
+  BN_sub(qo, q, one);
+  BN_mul(phin, po, qo, ctx);
+
+  BN_mod_inverse(pkey, e, phin, ctx);
+
+
+}
+
 int main ()
 {
   BN_CTX *ctx = BN_CTX_new();
@@ -37,6 +67,10 @@ int main ()
   // res = a^b mod n
   BN_mod_exp(res, a, b, n, ctx);
   printBN("a^b mod n = ", res);
+
+  BIGNUM *pkey = BN_new();
+  privKey(pkey);
+  printBN("Private key:", pkey);
 
   return 0;
 }
